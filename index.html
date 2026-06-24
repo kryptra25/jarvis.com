@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>J.A.R.V.I.S. | Advanced AI Assistant</title>
+    <link rel="icon" href="jarvis.png" type="image/jpeg">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap" rel="stylesheet">
+    
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+
+    <style>
+        :root {
+            --cyan: #00d2ff;
+            --dark-cyan: #03719c;
+            --bg-dark: #05080a;
+            --text-main: #e0f7fa;
+            --panel-bg: rgba(0, 210, 255, 0.05);
+            --border-glow: 0 0 15px rgba(0, 210, 255, 0.4);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Rajdhani', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            background-image: radial-gradient(circle at center, #0a1118 0%, #000000 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .nav-links a {
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Navigation */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            background: rgba(5, 8, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--dark-cyan);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo-container img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            box-shadow: var(--border-glow);
+            animation: pulse 2s infinite;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            color: var(--cyan);
+            text-shadow: 0 0 10px var(--cyan);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 1rem;
+            transition: 0.3s;
+            cursor: pointer;
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: var(--cyan);
+            text-shadow: 0 0 8px var(--cyan);
+        }
+
+        /* Hamburger Icon (Hidden on Desktop) */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 6px;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .hamburger span {
+            width: 30px;
+            height: 3px;
+            background-color: var(--cyan);
+            border-radius: 2px;
+            transition: 0.3s;
+            box-shadow: 0 0 5px var(--cyan);
+        }
+
+        /* Page Content */
+        .page {
+            display: none;
+            padding: 120px 50px 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Hero Section */
+        .hero {
+            display: flex;
+            align-items: center;
+            gap: 50px;
+            margin-top: 20px;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            color: var(--cyan);
+            text-shadow: 0 0 15px var(--cyan);
+            margin-bottom: 20px;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #b2ebf2;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 15px 30px;
+            background: transparent;
+            color: var(--cyan);
+            border: 1px solid var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            text-transform: uppercase;
+            text-decoration: none;
+            font-weight: bold;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: 0.3s;
+            box-shadow: inset 0 0 10px rgba(0, 210, 255, 0.2);
+        }
+
+        .btn:hover {
+            background: var(--cyan);
+            color: #000;
+            box-shadow: 0 0 20px var(--cyan);
+        }
+
+        .hero-image {
+            flex: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            border: 1px solid var(--dark-cyan);
+            box-shadow: var(--border-glow);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        /* Info Sections (Home Scrollable Content) */
+        .info-section {
+            margin-top: 100px;
+            display: flex;
+            align-items: center;
+            gap: 40px;
+        }
+        
+        .info-section.reverse {
+            flex-direction: row-reverse;
+        }
+
+        .info-section h2 {
+            font-size: 2.5rem;
+            color: var(--cyan);
+            margin-bottom: 20px;
+        }
+
+        .info-section p {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: #b2ebf2;
+            margin-bottom: 15px;
+        }
+
+        .info-image {
+            flex: 1;
+            border-radius: 10px;
+            border: 1px solid var(--dark-cyan);
+            box-shadow: var(--border-glow);
+            overflow: hidden;
+        }
+
+        .info-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .info-content {
+            flex: 1;
+        }
+
+        /* Sections Grid */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .card {
+            background: var(--panel-bg);
+            border: 1px solid var(--dark-cyan);
+            padding: 30px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            transition: transform 0.3s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--border-glow);
+        }
+
+        .card h3 {
+            color: var(--cyan);
+            margin-bottom: 15px;
+        }
+
+        /* Forms */
+        .form-container {
+            background: var(--panel-bg);
+            border: 1px solid var(--dark-cyan);
+            padding: 40px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            max-width: 600px;
+            margin: 40px auto 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--cyan);
+            font-family: 'Orbitron', sans-serif;
+            letter-spacing: 1px;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid var(--dark-cyan);
+            color: #fff;
+            border-radius: 5px;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.1rem;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+            border-color: var(--cyan);
+        }
+
+        textarea.form-control {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            accent-color: var(--cyan);
+            cursor: pointer;
+        }
+
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .modal-content {
+            background: #05080a;
+            border: 1px solid var(--cyan);
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 210, 255, 0.5);
+            max-width: 500px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            color: var(--cyan);
+            font-size: 1.5rem;
+            cursor: pointer;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Chatbot Widget */
+        .chatbot-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            background: #000;
+            border: 2px solid var(--cyan);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: var(--border-glow);
+            z-index: 1001;
+        }
+
+        .chatbot-btn img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 30px;
+            width: 350px;
+            height: 450px;
+            background: rgba(5, 8, 10, 0.95);
+            border: 1px solid var(--cyan);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 210, 255, 0.3);
+            display: none;
+            flex-direction: column;
+            z-index: 1001;
+            backdrop-filter: blur(10px);
+        }
+
+        .chat-header {
+            background: rgba(0, 210, 255, 0.1);
+            padding: 15px;
+            border-bottom: 1px solid var(--dark-cyan);
+            font-family: 'Orbitron', sans-serif;
+            color: var(--cyan);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .close-chat {
+            cursor: pointer;
+            color: var(--text-main);
+        }
+
+        .chat-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-msg {
+            padding: 10px 15px;
+            border-radius: 5px;
+            max-width: 80%;
+        }
+
+        .msg-ai {
+            background: rgba(0, 210, 255, 0.1);
+            border-left: 2px solid var(--cyan);
+            align-self: flex-start;
+        }
+
+        .msg-user {
+            background: rgba(255, 255, 255, 0.05);
+            border-right: 2px solid #fff;
+            align-self: flex-end;
+            color: #fff;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--dark-cyan);
+        }
+
+        .chat-input input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            outline: none;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1rem;
+        }
+
+        .chat-input button {
+            background: transparent;
+            border: none;
+            color: var(--cyan);
+            cursor: pointer;
+            font-weight: bold;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Animations */
+        @keyframes pulse {
+            0% { box-shadow: 0 0 5px rgba(0, 210, 255, 0.4); }
+            50% { box-shadow: 0 0 20px rgba(0, 210, 255, 0.8); }
+            100% { box-shadow: 0 0 5px rgba(0, 210, 255, 0.4); }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Responsive Mobile Settings */
+        @media (max-width: 768px) {
+            nav {
+                padding: 15px 30px;
+            }
+
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-links {
+                display: none; /* Hidden on mobile by default */
+                flex-direction: column;
+                position: absolute;
+                top: 80px; /* Sits just below the nav bar */
+                left: 0;
+                width: 100%;
+                background: rgba(5, 8, 10, 0.95);
+                backdrop-filter: blur(15px);
+                border-bottom: 1px solid var(--cyan);
+                box-shadow: 0 10px 20px rgba(0, 0, 0, 0.8);
+                padding: 20px 0;
+                text-align: center;
+                gap: 20px;
+            }
+
+            /* This class is added via JavaScript when the hamburger is clicked */
+            .nav-links.active-menu {
+                display: flex;
+            }
+
+            .hero, .info-section, .info-section.reverse { 
+                flex-direction: column; 
+            }
+            .info-image { 
+                width: 100%; 
+            }
+            .hero-content h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="logo-container">
+            <img src="jarvis.png" alt="JARVIS Logo">
+            <div class="logo-text">J.A.R.V.I.S.</div>
+        </div>
+        
+        <div class="hamburger" onclick="toggleMobileMenu()">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+
+        <div class="nav-links" id="navLinks">
+            <a onclick="showPage('home')" class="active" id="nav-home">System Overview</a>
+            <a onclick="showPage('about')" id="nav-about">Protocols</a>
+            <a onclick="showPage('download')" id="nav-download">Desktop Access</a>
+            <a onclick="showPage('mobile')" id="nav-mobile">Mobile Uplink</a>
+            <a onclick="showPage('contact')" id="nav-contact">Secure Comms</a>
+        </div>
+    </nav>
+
+    <div id="home" class="page active">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Just A Rather Very Intelligent System</h1>
+                <p>Welcome to the next evolution of personal computing. J.A.R.V.I.S. is a new and improved AI assistant tailored for your daily needs. From managing your schedule and automating workflows to providing real-time data analysis, the system operates seamlessly in the background of your life.</p>
+                <a onclick="showPage('download')" class="btn">Initiate Download</a>
+            </div>
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=800&auto=format&fit=crop" alt="Futuristic Tech UI">
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-content">
+                <h2>The Inspiration</h2>
+                <p>Bridging the gap between cinematic science fiction and tangible reality, J.A.R.V.I.S. was born from the desire to create a truly conversational, proactive digital companion. New AI assistants are built on simple typing and answering questions, but our software makes automation much easier.</p>
+                <p>Inspired by the iconic J.A.R.V.I.S. assistant from the Iron Man movies. The goal of this project is to bring a similar AI experience into the real world by creating an intelligent assistant that can communicate through voice, understand commands, automate tasks, remember information, and help manage everyday computer activities. Combining advanced AI, voice interaction, and a futuristic interface, JARVIS AI aims to make human-computer interaction more natural, efficient, and immersive.</p>
+            </div>
+            <div class="info-image">
+                <img src="iron_man.jpeg" alt="iron man example">
+            </div>
+        </div>
+
+        <div class="info-section reverse">
+            <div class="info-content">
+                <h2>Future Advancements</h2>
+                <p>We are constantly pushing the boundaries of what machine intelligence can achieve. Current development cycles are focused on making a mobile version and working on better automation.</p>
+                <p>Upcoming patches will include deeper device control such as smart home control and integrated Alexa skill.</p>
+            </div>
+            <div class="info-image">
+                <img src="advancements.png" alt="jarvis_advancements">
+            </div>
+        </div>
+
+        <div class="info-section">
+            <div class="info-content">
+                <h2>JARVIS AI Team</h2>
+                <p>Headquartered in Europe, first project from the JARVIS AI Team</p>
+                <p><strong>Our Team:</strong> One man solo team starting up with this amazing and futuristic project consisting of an assistant that we all wanted to this day.</p>
+            </div>
+            <div class="info-image">
+                <img src="jarvis_team.jpg" alt="Cyber security server room">
+            </div>
+        </div>
+    </div>
+
+    <div id="about" class="page">
+        <h2>System Protocols & Capabilities</h2>
+        <div class="grid-container">
+            <div class="card">
+                <h3>Biometric Security</h3>
+                <p>J.A.R.V.I.S. utilizes advanced facial recognition to scan and authenticate users, ensuring custom profiles and system data are completely protected.</p>
+            </div>
+            <div class="card">
+                <h3>Voice & Wake Word Detection</h3>
+                <p>Continuously listening for its custom wake word, J.A.R.V.I.S. captures voice commands using Whisper integration for highly accurate speech-to-text processing.</p>
+            </div>
+            <div class="card">
+                <h3>Streamed AI Processing</h3>
+                <p>Leveraging advanced neural networks, responses are streamed in real-time, allowing the assistant to speak sentences dynamically as they are formulated.</p>
+            </div>
+            <div class="card">
+                <h3>Multi-User Profiles</h3>
+                <p>Create separate user environments. The system remembers your name, birthday, custom wake word configurations, and personalized preferences.</p>
+            </div>
+            <div class="card">
+                <h3>System Automation</h3>
+                <p>Directly control your machine. Execute desktop commands, fetch weather integrations, initiate sleep modes, or perform secure system shutdowns via voice.</p>
+            </div>
+            <div class="card">
+                <h3>Desktop Integration</h3>
+                <p>Includes a dedicated system tray icon and an interactive graphical user interface (GUI) to monitor processing statuses and type commands silently.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="download" class="page">
+        <h2>Desktop Access Terminal</h2>
+        <p style="margin-top: 20px; font-size: 1.2rem; color: #b2ebf2;">Select your operating system to install the J.A.R.V.I.S. core module.</p>
+        
+        <div class="grid-container">
+            <div class="card" style="text-align: center;">
+                <h3>Windows (x64)</h3>
+                <p style="margin-bottom: 20px;">Version 2.4.1 | Requires Windows 10+</p>
+                <a href="#" class="btn">Download .EXE</a>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3>Windows (x32)</h3>
+                <p style="margin-bottom: 20px;">Version 2.4.1 | Requires Windows 10+</p>
+                <a href="#" class="btn">Download .EXE</a>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3>mac OS (Silicon/Intel)</h3>
+                <p style="margin-bottom: 20px;">Version 2.4.1 | Requires macOS 12+</p>
+                <a href="#" class="btn">Download .DMG</a>
+            </div>
+            <div class="card" style="text-align: center;">
+                <h3>Linux (Debian)</h3>
+                <p style="margin-bottom: 20px;">Version 2.4.1 | Requires Ubuntu 20.04+</p>
+                <a href="#" class="btn">Download .DEB</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="mobile" class="page">
+        <div class="hero">
+            <div class="hero-image">
+                <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop" alt="Mobile UI">
+            </div>
+            <div class="hero-content" style="margin-left: 40px;">
+                <h1>Mobile Uplink</h1>
+                <p>Take J.A.R.V.I.S. with you. The upcoming mobile application will sync seamlessly with your desktop core, providing voice-activated assistance, real-time GPS integration, and environmental scanning on the go.</p>
+                <p style="color: var(--cyan); margin-bottom: 20px; font-weight: bold;">Status: In Active Development</p>
+                <a onclick="openBetaModal()" class="btn">Join Beta Waitlist</a>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact" class="page">
+        <div style="text-align: center; margin-bottom: 30px;">
+            <h2>Secure Comms & Feedback</h2>
+            <p style="font-size: 1.2rem; color: #b2ebf2; max-width: 700px; margin: 15px auto;">
+                Have a feature request, module upgrade recommendation, or want to provide an honest review of your J.A.R.V.I.S. experience? Transmit your data below. We actively monitor user feedback to continuously improve system protocols.
+            </p>
+        </div>
+
+        <div class="form-container">
+            <form id="contactForm" onsubmit="submitForm(event, 'Feedback transmitted successfully. Thank you for your input.', 'contactForm')">
+                <div class="form-group">
+                    <label for="contactEmail">Uplink Email Address</label>
+                    <input type="email" id="contactEmail" class="form-control" placeholder="tony.stark@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="contactDesc">Transmission / Review Description</label>
+                    <textarea id="contactDesc" class="form-control" placeholder="Enter your review, bug report, or upgrade recommendation here..." required></textarea>
+                </div>
+                
+                <div class="form-group" style="margin-top: 15px; margin-bottom: 25px;">
+                    <div class="g-recaptcha" data-sitekey="6Ld2jzItAAAAAAMzinUa2_6irxSZ61t-8k1qv3ls"></div>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%;">Transmit Data</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="betaModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeBetaModal()">X</span>
+            <h2 style="color: var(--cyan); margin-bottom: 20px; font-size: 1.8rem;">Beta Waitlist Uplink</h2>
+            <p style="color: #b2ebf2; margin-bottom: 20px;">Register your credentials to gain early access to the J.A.R.V.I.S. Mobile Module.</p>
+            
+            <form id="betaForm" onsubmit="submitForm(event, 'Beta registration confirmed. Welcome to the grid.', 'betaForm')">
+                <div class="form-group">
+                    <label for="betaEmail">Email Address</label>
+                    <input type="email" id="betaEmail" class="form-control" placeholder="Enter your email" required>
+                </div>
+                <div class="checkbox-group">
+                    <input type="checkbox" id="betaConditions" required>
+                    <label for="betaConditions" style="margin: 0; color: #fff; font-family: 'Rajdhani', sans-serif;">I accept the conditions to be an official beta tester.</label>
+                </div>
+
+                <div class="form-group" style="margin-top: 15px; margin-bottom: 25px;">
+                    <div class="g-recaptcha" data-sitekey="6Ld2jzItAAAAAAMzinUa2_6irxSZ61t-8k1qv3ls"></div>
+                </div>
+
+                <button type="submit" class="btn" style="width: 100%; margin-top: 10px;">Initialize Registration</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="chatbot-btn" onclick="toggleChat()">
+        <img src="jarvis.png" alt="Chat">
+    </div>
+
+    <div class="chat-window" id="chatWindow">
+        <div class="chat-header">
+            <span>J.A.R.V.I.S. Terminal</span>
+            <span class="close-chat" onclick="toggleChat()">X</span>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="chat-msg msg-ai">Good evening. I am online and ready. How may I assist you today?</div>
+        </div>
+        <div class="chat-input">
+            <input type="text" id="userInput" placeholder="Enter command..." onkeypress="handleEnter(event)">
+            <button onclick="sendMessage()">SEND</button>
+        </div>
+    </div>
+
+    <script>
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const navLinks = document.getElementById('navLinks');
+            navLinks.classList.toggle('active-menu');
+        }
+
+        // SPA Page Navigation
+        function showPage(pageId) {
+            // Change visible page
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Update active link styling
+            document.querySelectorAll('.nav-links a').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            document.getElementById(pageId).classList.add('active');
+            document.getElementById('nav-' + pageId).classList.add('active');
+            
+            // Close mobile menu if it's open
+            const navLinks = document.getElementById('navLinks');
+            if (navLinks.classList.contains('active-menu')) {
+                navLinks.classList.remove('active-menu');
+            }
+
+            window.scrollTo(0, 0);
+        }
+
+        // Modal Logic
+        function openBetaModal() {
+            document.getElementById('betaModal').style.display = 'flex';
+        }
+
+        function closeBetaModal() {
+            document.getElementById('betaModal').style.display = 'none';
+        }
+
+        // Form Submit Simulation with reCAPTCHA Check
+        function submitForm(event, successMessage, formId) {
+            event.preventDefault(); // Prevent page reload
+            
+            // Check if reCAPTCHA was filled out
+            const form = document.getElementById(formId);
+            const recaptchaResponse = form.querySelector('.g-recaptcha-response').value;
+            
+            if (recaptchaResponse.length === 0) {
+                alert("Please verify that you are not a robot.");
+                return false;
+            }
+
+            alert(successMessage);
+            event.target.reset(); // Clear the form
+            grecaptcha.reset(); // Reset the reCAPTCHA widget
+
+            if (document.getElementById('betaModal').style.display === 'flex') {
+                closeBetaModal();
+            }
+        }
+
+        // Chatbot Logic
+        function toggleChat() {
+            const chat = document.getElementById('chatWindow');
+            chat.style.display = chat.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const input = document.getElementById('userInput');
+            const message = input.value.trim();
+            if (!message) return;
+
+            const chatBody = document.getElementById('chatBody');
+
+            const userDiv = document.createElement('div');
+            userDiv.className = 'chat-msg msg-user';
+            userDiv.textContent = message;
+            chatBody.appendChild(userDiv);
+
+            input.value = '';
+            chatBody.scrollTop = chatBody.scrollHeight;
+
+            setTimeout(() => {
+                const aiDiv = document.createElement('div');
+                aiDiv.className = 'chat-msg msg-ai';
+                aiDiv.textContent = "Processing request... Protocols have been updated accordingly, sir.";
+                chatBody.appendChild(aiDiv);
+                chatBody.scrollTop = chatBody.scrollHeight;
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
