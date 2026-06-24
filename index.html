@@ -809,6 +809,7 @@
 
             const chatBody = document.getElementById('chatBody');
 
+            // 1. Display User Message
             const userDiv = document.createElement('div');
             userDiv.className = 'chat-msg msg-user';
             userDiv.textContent = message;
@@ -817,13 +818,46 @@
             input.value = '';
             chatBody.scrollTop = chatBody.scrollHeight;
 
+            // 2. Process AI Response
             setTimeout(() => {
                 const aiDiv = document.createElement('div');
                 aiDiv.className = 'chat-msg msg-ai';
-                aiDiv.textContent = "Processing request... Protocols have been updated accordingly, sir.";
+                
+                const lowerMsg = message.toLowerCase();
+                let aiResponse = "";
+
+                // Keyword Routing Logic
+                if (lowerMsg.includes('download') || lowerMsg.includes('install') || lowerMsg.includes('get jarvis')) {
+                    aiResponse = "Right away. I am redirecting you to the Desktop Access Terminal where you can download the core module for your specific operating system.";
+                    showPage('download');
+                } 
+                else if (lowerMsg.includes('contact') || lowerMsg.includes('feedback') || lowerMsg.includes('support') || lowerMsg.includes('reach out')) {
+                    aiResponse = "Opening the Secure Comms channel. You can transmit your feedback or contact the development team using the form here.";
+                    showPage('contact');
+                } 
+                else if (lowerMsg.includes('home') || lowerMsg.includes('overview') || lowerMsg.includes('main')) {
+                    aiResponse = "Returning you to the main System Overview.";
+                    showPage('home');
+                } 
+                else if (lowerMsg.includes('about') || lowerMsg.includes('protocol') || lowerMsg.includes('capabilities') || lowerMsg.includes('features')) {
+                    aiResponse = "Accessing System Protocols & Capabilities. Here you can view my core functions.";
+                    showPage('about');
+                } 
+                else if (lowerMsg.includes('mobile') || lowerMsg.includes('phone') || lowerMsg.includes('beta') || lowerMsg.includes('waitlist')) {
+                    aiResponse = "Routing you to the Mobile Uplink page where you can join the beta waitlist.";
+                    showPage('mobile');
+                } 
+                else if (lowerMsg.includes('hello') || lowerMsg.includes('hi') || lowerMsg.includes('hey')) {
+                    aiResponse = "Hello! I am online and ready. I can help you navigate this terminal, download the software, or contact the team. What do you need?";
+                }
+                else {
+                    aiResponse = "I am currently optimized to assist with terminal navigation. Try asking me how to download the system, view my protocols, or contact my developer.";
+                }
+
+                aiDiv.textContent = aiResponse;
                 chatBody.appendChild(aiDiv);
                 chatBody.scrollTop = chatBody.scrollHeight;
-            }, 1000);
+            }, 600); // 600ms delay for a snappy but natural response feel
         }
     </script>
 </body>
