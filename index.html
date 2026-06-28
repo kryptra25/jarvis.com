@@ -178,6 +178,7 @@
             overflow: hidden;
             border: 1px solid var(--dark-cyan);
             box-shadow: var(--border-glow);
+            width: 100%;
         }
 
         .hero-image img {
@@ -217,6 +218,7 @@
             border: 1px solid var(--dark-cyan);
             box-shadow: var(--border-glow);
             overflow: hidden;
+            width: 100%;
         }
 
         .info-image img {
@@ -266,6 +268,7 @@
             backdrop-filter: blur(5px);
             max-width: 600px;
             margin: 40px auto 0;
+            width: 100%;
         }
 
         .form-group {
@@ -476,7 +479,11 @@
         /* Responsive Mobile Settings */
         @media (max-width: 768px) {
             nav {
-                padding: 15px 30px;
+                padding: 15px 20px;
+            }
+
+            .logo-text {
+                font-size: 1.2rem;
             }
 
             .hamburger {
@@ -504,14 +511,51 @@
                 display: flex;
             }
 
+            .page {
+                padding: 100px 20px 30px;
+            }
+
             .hero, .info-section, .info-section.reverse { 
                 flex-direction: column; 
+                gap: 25px;
+                margin-top: 40px;
             }
-            .info-image { 
-                width: 100%; 
+
+            .mobile-content-fix {
+                margin-left: 0 !important;
             }
-            .hero-content h1 {
-                font-size: 2.5rem;
+
+            .hero-content h1, .info-section h2 {
+                font-size: 2.2rem;
+                text-align: center;
+            }
+
+            .hero-content p, .info-section p {
+                text-align: justify;
+                font-size: 1.1rem;
+            }
+
+            .hero-content {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .form-container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .grid-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .chat-window {
+                width: calc(100% - 40px);
+                right: 20px;
+                left: 20px;
+                bottom: 100px;
             }
         }
     </style>
@@ -687,7 +731,7 @@
             <div class="hero-image">
                 <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?q=80&w=800&auto=format&fit=crop" alt="Mobile UI">
             </div>
-            <div class="hero-content" style="margin-left: 40px;">
+            <div class="hero-content mobile-content-fix">
                 <h1>Mobile Uplink</h1>
                 <p>Take J.A.R.V.I.S. with you. The upcoming mobile application will sync seamlessly with your desktop core, providing voice-activated assistance, real-time GPS integration, and environmental scanning on the go.</p>
                 <p style="color: var(--cyan); margin-bottom: 20px; font-weight: bold;">Status: In Active Development</p>
