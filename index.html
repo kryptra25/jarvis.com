@@ -851,25 +851,67 @@
             document.getElementById('betaModal').style.display = 'none';
         }
 
-        // Form Submit Simulation with reCAPTCHA Check
-        function submitForm(event, successMessage, formId) {
-            event.preventDefault(); // Prevent page reload
-            
-            // Check if reCAPTCHA was filled out
+        // Paste your copied Google Web App URL here
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwq99GqJp6MG-2nY0VzvuCJ5x6hajcyN_E8EBiLFwnxkm3FxHg5gjAkcYsXdkmzQREZ/exec";
+
+        async function submitForm(event, successMessage, formId) {
+		    event.preventDefault(); // Stop page reload
+    
             const form = document.getElementById(formId);
             const recaptchaResponse = form.querySelector('.g-recaptcha-response').value;
-            
+    
             if (recaptchaResponse.length === 0) {
                 alert("Please verify that you are not a robot.");
                 return false;
             }
 
-            alert(successMessage);
-            event.target.reset(); // Clear the form
-            grecaptcha.reset(); // Reset the reCAPTCHA widget
+            // Identify which module data is coming from
+            let payload = {};
+            if (formId === 'betaForm') {
+                payload = {
+                    formType: 'beta',
+                    email: document.getElementById('betaEmail').value
+                };
+            } else if (formId === 'contactForm') {
+                payload = {
+                    formType: 'contact',
+                    email: document.getElementById('contactEmail').value,
+                    description: document.getElementById('contactDesc').value
+                };
+            }
 
-            if (document.getElementById('betaModal').style.display === 'flex') {
-                closeBetaModal();
+            try {
+                // Change button state to visual loading indicator
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalText = submitBtn.textContent;
+                submitBtn.textContent = "TRANSMITTING DATA...";
+                submitBtn.disabled = true;
+
+                // Execute the fetch protocol to your backend script
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors', // Bypasses cross-origin browser restrictions safely for basic web apps
+                    headers: {
+					    'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                // Since 'no-cors' mode won't return status codes explicitly, assume success if no error was caught
+                alert(successMessage);
+                form.reset();
+                grecaptcha.reset();
+
+                if (document.getElementById('betaModal').style.display === 'flex') {
+                    closeBetaModal();
+                }
+        
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+
+            } catch (error) {
+                console.error("Transmission failed:", error);
+                alert("System Error: Unable to complete uplink transmission. Check developer console.");
             }
         }
 
